@@ -1,5 +1,6 @@
 package hudson.plugins.s3.callable;
 
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import hudson.FilePath;
 import hudson.FilePath.FileCallable;
 import hudson.plugins.s3.Destination;
@@ -47,15 +48,16 @@ public class S3UploadCallable extends AbstractS3Callable implements FileCallable
     private final boolean produced;
     private final boolean useServerSideEncryption;
     private final boolean gzipFiles;
+    private final boolean makePublic;
 
     @Deprecated
     public S3UploadCallable(boolean produced, String accessKey, Secret secretKey, boolean useRole, Destination dest, List<MetadataPair> userMetadata, String storageClass,
                             String selregion, boolean useServerSideEncryption) {
-        this(produced, accessKey, secretKey, useRole, dest.bucketName, dest, convertOldMeta(userMetadata), storageClass, selregion, useServerSideEncryption, false);
+        this(produced, accessKey, secretKey, useRole, dest.bucketName, dest, convertOldMeta(userMetadata), storageClass, selregion, useServerSideEncryption, false, false);
     }
 
     public S3UploadCallable(boolean produced, String accessKey, Secret secretKey, boolean useRole, String bucketName, Destination dest, Map<String, String> userMetadata, String storageClass,
-                            String selregion, boolean useServerSideEncryption, boolean gzipFiles) {
+                            String selregion, boolean useServerSideEncryption, boolean gzipFiles, boolean makePublic) {
         super(accessKey, secretKey, useRole);
         this.bucketName = bucketName;
         this.dest = dest;
@@ -65,6 +67,7 @@ public class S3UploadCallable extends AbstractS3Callable implements FileCallable
         this.produced = produced;
         this.useServerSideEncryption = useServerSideEncryption;
         this.gzipFiles = gzipFiles;
+        this.makePublic = makePublic;
     }
 
     public ObjectMetadata buildMetadata(FilePath filePath) throws IOException, InterruptedException {
@@ -135,8 +138,13 @@ public class S3UploadCallable extends AbstractS3Callable implements FileCallable
         }
 
         try {
-            final PutObjectRequest request = new PutObjectRequest(dest.bucketName, dest.objectName, inputStream, metadata)
+            PutObjectRequest request = new PutObjectRequest(dest.bucketName, dest.objectName, inputStream, metadata)
                 .withMetadata(metadata);
+
+            if (makePublic) {
+                request.withCannedAcl(CannedAccessControlList.PublicRead);
+            }
+
             final PutObjectResult result = getClient().putObject(request);
             return new FingerprintRecord(produced, bucketName, file.getName(), result.getETag());
         } finally {
