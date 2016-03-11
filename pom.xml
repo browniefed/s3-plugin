@@ -40,9 +40,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:ssh://github.com/jenkinsci/s3-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/jenkinsci/s3-plugin.git</developerConnection>
-        <url>https://github.com/jenkinsci/s3-plugin</url>
+        <connection>scm:git:ssh://github.com/browniefed/s3-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/browniefed/s3-plugin.git</developerConnection>
+        <url>https://github.com/browniefed/s3-plugin</url>
       <tag>HEAD</tag>
   </scm>
 

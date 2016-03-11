@@ -36,7 +36,10 @@ public final class Entry implements Describable<Entry> {
      * Stores the Region Value
      */
     public String selectedRegion;
-    
+    /**
+     * Stores the make public value
+     */
+    public boolean makePublic;
     /**
      * Do not publish the artifacts when build fails
      */
@@ -75,6 +78,7 @@ public final class Entry implements Describable<Entry> {
 
     @DataBoundConstructor
     public Entry(String bucket, String sourceFile, String storageClass, String selectedRegion,
+                 boolean makePublic,
                  boolean noUploadOnFailure, boolean uploadFromSlave, boolean managedArtifacts,
                  boolean useServerSideEncryption, boolean flatten, boolean gzipFiles, List<MetadataPair> userMetadata) {
         this.bucket = bucket;
@@ -88,6 +92,7 @@ public final class Entry implements Describable<Entry> {
         this.flatten = flatten;
         this.gzipFiles = gzipFiles;
         this.userMetadata = userMetadata;
+        this.makePublic = makePublic;
     }
 
     public Descriptor<Entry> getDescriptor() {
